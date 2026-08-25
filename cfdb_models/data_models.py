@@ -23,10 +23,26 @@ from typing import Set, Optional, Dict, Tuple, List, Union, Any
 
 class Type(enum.Enum):
     """
+    The dataset type, which fixes the dimensional layout.
 
+    grid          -- (x, y, time) gridded fields.
+    ts_ortho      -- (point, time) station time series; point is a geometry coordinate.
+    ts_forecast   -- (point, forecast_reference_time, forecast_period) station forecasts.
+    grid_forecast -- (x, y, forecast_reference_time, forecast_period) gridded forecasts.
+
+    The two forecast types use a LEAD axis (forecast_period) rather than a valid-time axis:
+    (point, init, valid_time) is ~97% empty because each run fills only a short diagonal band,
+    whereas (point, init, lead) is dense. Valid time is init + lead, derived arithmetic.
+
+    NOTE for anyone adding a member: several dispatch sites in cfdb compare this value with
+    exact string equality, so a new type inherits nothing automatically. The one exception is
+    utils.parse_coord_inputs, which tests `'ts_' in dataset_type` -- a substring check that the
+    ts_ prefix is chosen to satisfy.
     """
     grid = 'grid'
     ts_ortho = 'ts_ortho'
+    ts_forecast = 'ts_forecast'
+    grid_forecast = 'grid_forecast'
 
 
 class Compressor(enum.Enum):
