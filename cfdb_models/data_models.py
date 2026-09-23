@@ -47,10 +47,15 @@ class Type(enum.Enum):
 
 class Compressor(enum.Enum):
     """
-
+    Chunk compression recorded in a cfdb file. The ``*_shuffle`` values split each value into
+    byte planes before the codec (numpy only, lossless). They are separate enum values, not a
+    flag, so that an older cfdb/cfdb-models refuses a shuffled file with a validation error
+    instead of silently decompressing shuffled bytes as plain ones.
     """
     zstd = 'zstd'
     lz4 = 'lz4'
+    zstd_shuffle = 'zstd_shuffle'
+    lz4_shuffle = 'lz4_shuffle'
 
 
 class Axis(enum.Enum):
